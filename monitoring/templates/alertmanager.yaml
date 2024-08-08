@@ -1,0 +1,38 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: {{ include "monitoring.fullname" . }}
+  labels:
+    {{- include "monitoring.labels" . | nindent 4 }}
+spec:
+  replicas: 3
+  global:
+    alertmanagers:
+    - static_configs:
+      - targets:
+        - <your_airflow_endpoint>
+  route:
+    group_by: ['job']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 12h
+    receiver: 'webhook'
+  receivers:
+  - name: 'webhook'
+    webhook_configs:
+    - url: 'http://example.com/'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "monitoring.fullname" . }}
+spec:
+  type: NodePort
+  ports:
+  - name: web
+    nodePort: 30903
+    port: 9093
+    protocol: TCP
+    targetPort: web
+  selector:
+    {{- include "monitoring.labels" . | nindent 4 }}
