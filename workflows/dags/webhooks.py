@@ -165,7 +165,7 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
         dag=dag
     )
 
-    list_pods_1 >> list_pods_2 >> query_pod_volume >> [notify, action]
+    list_pods_1 >> list_pods_2 >> [notify, action]
 
 
     # task = SimpleHttpOperator(
