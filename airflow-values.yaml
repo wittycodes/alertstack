@@ -1,7 +1,7 @@
 dags:
   gitSync:
     enabled: true
-    repo: git@github.com:wittycodes/demostack.git
+    repo: "git@github.com:wittycodes/demostack.git"
     branch: main
     subPath: "workflows"
     sshKeySecret: airflow-ssh-secret
