@@ -158,9 +158,9 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
         task_id='notify',
         python_callable=lambda ti: [
             slack.send_to_slack(ti),
-            pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_custom_email(ti),
-            discord.send_to_discord(ti)
+            # pagerduty.send_to_pagerduty(ti),
+            # customemail.send_to_custom_email(ti),
+            # discord.send_to_discord(ti)
         ],
         dag=dag
     )
