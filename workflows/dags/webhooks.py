@@ -3,7 +3,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from notifiers import slack, pagerduty, email, discord
+from notifiers import slack, pagerduty, customemail, discord
 from actions import k8s_actions
 from feedbacks import k8s_feedbacks
 
