@@ -19,7 +19,7 @@ apps_v1 = client.AppsV1Api()
 
 # List pods
 def list_pods(namespace):
-    pods = v1.list_pod_for_all_namespaces(watch=False)
+    pods = v1.list_namespaced_pod(namespace=namespace)
     for i in pods.items:
         print(i.metadata.name)
         logger.info(i.metadata.name)
@@ -37,12 +37,14 @@ with DAG('webhook_http_operator', default_args=default_args, schedule_interval=N
     list_pods_1 = PythonOperator(
         task_id='list_pods_1',
         python_callable=list_pods,
+        op_args=['monitoring'],
         dag=dag
     )
 
     list_pods_2 = PythonOperator(
         task_id='list_pods_2',
         python_callable=list_pods,
+        op_args=['prometheus'],
         dag=dag
     )
 
