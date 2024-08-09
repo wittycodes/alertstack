@@ -3,10 +3,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from notifiers import slack, pagerduty, email
+from notifiers import slack, pagerduty, email, discord
 from actions import k8s_actions
-from feedbacks import k8s_feedbacks
-
 
 from datetime import datetime
 import logging
@@ -160,7 +158,8 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
         python_callable=lambda ti: [
             slack.send_to_slack(ti),
             pagerduty.send_to_pagerduty(ti),
-            email.send_to_email(ti)
+            email.send_to_email(ti),
+            discord.send_to_discord(ti)
         ],
         dag=dag
     )

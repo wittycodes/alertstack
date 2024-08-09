@@ -20,3 +20,4 @@ airflow:
   extraPipPackages:
     - "pdpyras"
     - "slack_sdk"
+    - "discord.py"
