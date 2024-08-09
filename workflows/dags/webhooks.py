@@ -3,9 +3,9 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from demostack.workflows.notifiers import slack, pagerduty, email
-from demostack.workflows.actions import k8s_actions
-from demostack.workflows.feedbacks import k8s_feedbacks
+from workflows.notifiers import slack, pagerduty, email
+from workflows.actions import k8s_actions
+from workflows.feedbacks import k8s_feedbacks
 
 
 from datetime import datetime
