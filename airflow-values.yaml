@@ -12,3 +12,11 @@ extraSecrets:
 extraEnv: |
   - name: AIRFLOW__API__AUTH_BACKENDS
     value: airflow.api.auth.backend.basic_auth
+workers:
+  serviceAccount:
+    create: false
+    name: airflow-service-account
+airflow:
+  extraPipPackages:
+    - "pdpyras"
+    - "slack_sdk"
