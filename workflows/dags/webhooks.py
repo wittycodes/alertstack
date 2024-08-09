@@ -139,12 +139,12 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
         dag=dag
     )
 
-    query_pod_volume = PythonOperator(
-        task_id='query_pod_volume',
-        python_callable=lambda ti: k8s_feedbacks.get_pod_volume(),
-        op_args=['prometheus'],
-        dag=dag
-    )
+    # query_pod_volume = PythonOperator(
+    #     task_id='query_pod_volume',
+    #     python_callable=lambda ti: k8s_feedbacks.get_pod_volume(),
+    #     op_args=['prometheus'],
+    #     dag=dag
+    # )
 
     action = PythonOperator(
         task_id='action',
