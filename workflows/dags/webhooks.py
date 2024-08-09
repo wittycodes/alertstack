@@ -51,7 +51,7 @@ with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=Non
         python_callable=lambda ti: [
             slack.send_to_slack(ti),
             pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_email(ti)
+            customemail.send_to_custom_email(ti)
         ],
         dag=dag
     )
@@ -105,7 +105,7 @@ with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=Non
         python_callable=lambda ti: [
             slack.send_to_slack(ti),
             pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_email(ti)
+            customemail.send_to_custom_email(ti)
         ],
         dag=dag
     )
@@ -157,10 +157,10 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
     notify = PythonOperator(
         task_id='notify',
         python_callable=lambda ti: [
-            slack.send_to_slack(ti),
+            # slack.send_to_slack(ti),
             # pagerduty.send_to_pagerduty(ti),
             # customemail.send_to_custom_email(ti),
-            # discord.send_to_discord(ti)
+            discord.send_to_discord(ti)
         ],
         dag=dag
     )
