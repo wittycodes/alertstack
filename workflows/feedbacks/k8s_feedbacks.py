@@ -25,5 +25,5 @@ def list_pods(namespace):
 
 
 @task
-def get_pod_volume():
+def get_pod_volume(namespace):
     return None
