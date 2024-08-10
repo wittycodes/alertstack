@@ -25,13 +25,14 @@ with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=Non
 
     action = k8s_actions.increase_pod_volume("monitoring")
 
-    notify = [
+    final_call = [
         slack.send_to_slack("hello"),
         pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello")
+        customemail.send_to_custom_email("hello"),
+        action
     ]
 
-    list_pods_1 >> list_pods_2 >> query_pod_volume >> [notify, action]
+    list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
 
 with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=None) as dag:
@@ -44,13 +45,14 @@ with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=Non
 
     action = k8s_actions.increase_pod_volume("monitoring")
 
-    notify = [
+    final_call = [
         slack.send_to_slack("hello"),
         pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello")
+        customemail.send_to_custom_email("hello"),
+        action
     ]
 
-    list_pods_1 >> list_pods_2 >> query_pod_volume >> [notify, action]
+    list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
 
 
@@ -62,11 +64,12 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
 
     action = k8s_actions.increase_pod_volume("monitoring")
 
-    notify = [
+    final_call = [
         slack.send_to_slack("hello"),
         pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello")
+        customemail.send_to_custom_email("hello"),
+        action
     ]
 
 
-    list_pods_1 >> list_pods_2 >> [notify, action]
+    list_pods_1 >> list_pods_2 >> final_call
