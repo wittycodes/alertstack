@@ -160,7 +160,7 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
             slack.send_to_slack(ti),
             pagerduty.send_to_pagerduty(ti),
             customemail.send_to_custom_email(ti),
-            discord.send_to_discord(ti)
+            discord.send_to_discord(ti.task_display_name)
         ],
         dag=dag
     )
