@@ -17,162 +17,55 @@ default_args = {
 
 with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=None) as dag:
 
-    list_pods_1 = PythonOperator(
-        task_id='list_pods_1',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['monitoring'],
-        dag=dag
-    )
+    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
-    list_pods_2 = PythonOperator(
-        task_id='list_pods_2',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['prometheus'],
-        dag=dag
-    )
+    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
 
-    query_pod_volume = PythonOperator(
-        task_id='query_pod_volume',
-        python_callable=lambda ti: k8s_feedbacks.get_pod_volume(),
-        op_args=['prometheus'],
-        dag=dag
-    )
+    query_pod_volume = k8s_feedbacks.get_pod_volume("prometheus")
 
-    action = PythonOperator(
-        task_id='action',
-        python_callable=lambda ti: [
-            k8s_actions.increase_pod_volume("monitoring")
-        ],
-        dag=dag
-    )
+    action = k8s_actions.increase_pod_volume("monitoring")
 
-    notify = PythonOperator(
-        task_id='notify',
-        python_callable=lambda ti: [
-            slack.send_to_slack(ti),
-            pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_custom_email(ti)
-        ],
-        dag=dag
-    )
+    notify = (lambda **kwargs: [
+            slack.send_to_slack(kwargs),
+            pagerduty.send_to_pagerduty(kwargs),
+            customemail.send_to_custom_email(kwargs)
+        ])(),
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> [notify, action]
-
-
-    # task = SimpleHttpOperator(
-    #     task_id='post_op',
-    #     http_conn_id='http_default',
-    #     endpoint='api/v1/external/trigger',
-    #     method='POST',
-    #     data='{"dag_run_id": "my_custom_run_id"}',
-    #     headers={"Content-Type": "application/json"}
-    # )
 
 
 with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=None) as dag:
 
-    list_pods_1 = PythonOperator(
-        task_id='list_pods_1',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['monitoring'],
-        dag=dag
-    )
+    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
-    list_pods_2 = PythonOperator(
-        task_id='list_pods_2',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['prometheus'],
-        dag=dag
-    )
+    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
 
-    query_pod_volume = PythonOperator(
-        task_id='query_pod_volume',
-        python_callable=lambda ti: k8s_feedbacks.get_pod_volume(),
-        op_args=['prometheus'],
-        dag=dag
-    )
+    query_pod_volume = k8s_feedbacks.get_pod_volume("prometheus")
 
-    action = PythonOperator(
-        task_id='action',
-        python_callable=lambda ti: [
-            k8s_actions.increase_pod_volume("monitoring")
-        ],
-        dag=dag
-    )
+    action = k8s_actions.increase_pod_volume("monitoring")
 
-    notify = PythonOperator(
-        task_id='notify',
-        python_callable=lambda ti: [
-            slack.send_to_slack(ti),
-            pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_custom_email(ti)
-        ],
-        dag=dag
-    )
+    notify = (lambda **kwargs: [
+            slack.send_to_slack(kwargs),
+            pagerduty.send_to_pagerduty(kwargs),
+            customemail.send_to_custom_email(kwargs)
+        ])(),
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> [notify, action]
 
 
-    # task = SimpleHttpOperator(
-    #     task_id='post_op',
-    #     http_conn_id='http_default',
-    #     endpoint='api/v1/external/trigger',
-    #     method='POST',
-    #     data='{"dag_run_id": "my_custom_run_id"}',
-    #     headers={"Content-Type": "application/json"}
-    # )
-
 
 with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None) as dag:
 
-    list_pods_1 = PythonOperator(
-        task_id='list_pods_1',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['monitoring'],
-        dag=dag
-    )
+    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
-    list_pods_2 = PythonOperator(
-        task_id='list_pods_2',
-        python_callable=k8s_feedbacks.list_pods,
-        op_args=['prometheus'],
-        dag=dag
-    )
+    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
 
-    # query_pod_volume = PythonOperator(
-    #     task_id='query_pod_volume',
-    #     python_callable=lambda ti: k8s_feedbacks.get_pod_volume(),
-    #     op_args=['prometheus'],
-    #     dag=dag
-    # )
+    action = k8s_actions.increase_pod_volume("monitoring")
 
-    action = PythonOperator(
-        task_id='action',
-        python_callable=lambda ti: [
-            k8s_actions.increase_pod_volume("monitoring")
-        ],
-        dag=dag
-    )
-
-    notify = PythonOperator(
-        task_id='notify',
-        python_callable=lambda ti: [
-            slack.send_to_slack(ti),
-            pagerduty.send_to_pagerduty(ti),
-            customemail.send_to_custom_email(ti),
-            discord.send_to_discord(ti.task_display_name)
-        ],
-        dag=dag
-    )
+    notify = (lambda **kwargs: [
+            slack.send_to_slack(kwargs),
+            pagerduty.send_to_pagerduty(kwargs),
+            customemail.send_to_custom_email(kwargs)
+        ])(),
 
     list_pods_1 >> list_pods_2 >> [notify, action]
-
-
-    # task = SimpleHttpOperator(
-    #     task_id='post_op',
-    #     http_conn_id='http_default',
-    #     endpoint='api/v1/external/trigger',
-    #     method='POST',
-    #     data='{"dag_run_id": "my_custom_run_id"}',
-    #     headers={"Content-Type": "application/json"}
-    # )

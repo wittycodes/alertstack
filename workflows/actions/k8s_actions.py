@@ -7,6 +7,10 @@ config.load_incluster_config()
 v1 = client.CoreV1Api()
 apps_v1 = client.AppsV1Api()
 
+from airflow.decorators import task
+
+
+@task
 def increase_pod_volume(namespace):
     pods = v1.list_namespaced_pod(namespace=namespace)
     for i in pods.items:
