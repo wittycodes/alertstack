@@ -9,20 +9,22 @@ from feedbacks import k8s_feedbacks
 
 from datetime import datetime
 import logging
+
 logger = logging.getLogger(__name__)
 
 default_args = {
     'start_date': datetime(2021, 1, 1)
 }
 
+
 @task
 def get_alerts(**kwargs):
     data = kwargs['dag_run'].conf
-    
+    logger.info("it's good inside webhook_prometheus_entrypoint")
+    logger.info(data)
 
 
 with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None) as dag:
-
     pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
         task_id='pod_volume_analysis_trigger_dag',
         trigger_dag_id='pod_volume_analysis',
@@ -44,13 +46,10 @@ with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_in
         wait_for_completion=False,
     )
 
-    logger.info("it's good inside webhook_prometheus_entrypoint")
-
+    get_alerts
     # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
-
 with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=None) as dag:
-
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
@@ -67,10 +66,8 @@ with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=Non
     ]
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
-
 
 with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=None) as dag:
-
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
@@ -88,10 +85,7 @@ with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=Non
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
-
-
 with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None) as dag:
-
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
@@ -104,6 +98,5 @@ with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None)
         customemail.send_to_custom_email("hello"),
         action
     ]
-
 
     list_pods_1 >> list_pods_2 >> final_call
