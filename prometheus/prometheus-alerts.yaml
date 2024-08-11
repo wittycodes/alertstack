@@ -43,7 +43,8 @@ spec:
   - name: Pod Disk Usage Alerts
     rules:
     - alert: PodDiskUsageHigh
-      expr:  rate(container_fs_writes_bytes_total{namespace="monitoring"}[1m]) > 100
+      expr: vector(1)
+#      expr:  rate(container_fs_writes_bytes_total{namespace="monitoring"}[1m]) > 100
 #      for: 5m
       labels:
         severity: critical

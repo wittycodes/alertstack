@@ -10,55 +10,13 @@ spec:
 #  global:
 #    # ... other global config
   receivers:
-  - name: 'pod_volume_analysis'
+  - name: 'airflow_webhook'
     webhookConfigs:
-    - url: 'http://poc-stack-webserver.airflow.svc.cluster.local:8080/api/v1/dags/pod_volume_analysis/dagRuns'
-      httpConfig:
-        basicAuth:
-          username:
-            name: airflow-basicauth-secret
-            key: username
-          password:
-            name: airflow-basicauth-secret
-            key: password
-
-      # Add optional headers, httpConfig, sendResolved, etc.
-  - name: 'pod_memory_analysis'
-    webhookConfigs:
-      - url: 'http://poc-stack-webserver.airflow.svc.cluster.local:8080/api/v1/dags/pod_memory_analysis/dagRuns'
-        httpConfig:
-          basicAuth:
-            username:
-              name: airflow-basicauth-secret
-              key: username
-            password:
-              name: airflow-basicauth-secret
-              key: password
-        # Add optional headers, httpConfig, sendResolved, etc.
-  - name: 'node_cpu_analysis'
-    webhookConfigs:
-    - url: 'http://poc-stack-webserver.airflow.svc.cluster.local:8080/api/v1/dags/node_cpu_analysis/dagRuns'
-      httpConfig:
-        basicAuth:
-          username:
-            name: airflow-basicauth-secret
-            key: username
-          password:
-            name: airflow-basicauth-secret
-            key: password
-      # Add optional headers, httpConfig, sendResolved, etc.
+    - url: 'http://poc-stack-webserver.airflow.svc.cluster.local:8080/webhooks/prometheus'
 
   route:
-    receiver: 'default'
+    receiver: 'airflow_webhook'
 #    group_by: [ 'alertname' ]
 #    group_wait: 5m
 #    group_interval: 5m
 #    repeat_interval: 1h
-    routes:
-      - match_label:
-          airflow_dag_id: pod_memory_analysis
-        receiver: pod_memory_analysis
-      - match_label:
-          airflow_dag_id: pod_volume_analysis
-        receiver: pod_volume_analysis
-

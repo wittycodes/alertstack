@@ -2,6 +2,7 @@
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from notifiers import slack, pagerduty, customemail, discord
 from actions import k8s_actions
@@ -14,6 +15,32 @@ logger = logging.getLogger(__name__)
 default_args = {
     'start_date': datetime(2021, 1, 1)
 }
+
+with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None) as dag:
+
+    pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
+        task_id='pod_volume_analysis_trigger_dag',
+        trigger_dag_id='pod_volume_analysis',
+        # conf={'my_param': 'value'},
+        wait_for_completion=True,
+    )
+
+    pod_memory_analysis_trigger_dag = TriggerDagRunOperator(
+        task_id='pod_memory_analysis_trigger_dag',
+        trigger_dag_id='pod_memory_analysis',
+        # conf={'my_param': 'value'},
+        wait_for_completion=False,
+    )
+
+    node_cpu_analysis_trigger_dag = TriggerDagRunOperator(
+        task_id='node_cpu_analysis_trigger_dag',
+        trigger_dag_id='node_cpu_analysis',
+        # conf={'my_param': 'value'},
+        wait_for_completion=True,
+    )
+
+    pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_volume_analysis_trigger_dag]
+
 
 with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=None) as dag:
 

@@ -16,8 +16,21 @@ workers:
   serviceAccount:
     create: false
     name: airflow-service-account
-airflow:
-  extraPipPackages:
-    - "pdpyras"
-    - "slack_sdk"
-    - "discord.py"
+#airflow:
+#  extraPipPackages:
+#    - "pdpyras"
+#    - "slack_sdk"
+#    - "discord.py"
+
+webserver:
+  extraVolumeMounts:
+    - name: airflow-plugins
+      mountPath: /opt/airflow/plugins/prometheus.py
+      subPath: prometheus.py
+  extraVolumes:
+    - name: airflow-plugins
+      configMap:
+        name: airflow-plugins
+        items:
+          - key: prometheus.py
+            path: prometheus.py
