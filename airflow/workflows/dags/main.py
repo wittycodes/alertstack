@@ -37,7 +37,9 @@ with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_in
         wait_for_completion=False,
     )
 
-    pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
+    logger.info("it's good inside webhook_prometheus_entrypoint")
+
+    # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
 
 with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=None) as dag:
