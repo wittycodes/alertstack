@@ -1,4 +1,4 @@
-def xcom_push(key, value):
+def xcom_push(key):
     def decorator(func):
         def wrapper(*args, **kwargs):
             value = func(*args, **kwargs)
