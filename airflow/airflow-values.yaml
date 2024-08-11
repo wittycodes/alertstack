@@ -3,7 +3,7 @@ dags:
     enabled: true
     repo: "git@github.com:wittycodes/demostack.git"
     branch: main
-    subPath: "workflows"
+    subPath: "airflow/workflows"
     sshKeySecret: airflow-ssh-secret
 extraSecrets:
   airflow-ssh-secret:

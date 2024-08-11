@@ -1,7 +1,11 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
-  name: my-alertmanager-config
+  name: custom-alerts-config
+  namespace: prometheus
+  labels:
+    release: poc-stack
+
 spec:
 #  global:
 #    # ... other global config
