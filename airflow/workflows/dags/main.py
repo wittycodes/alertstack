@@ -1,6 +1,7 @@
 # https://www.restack.io/docs/airflow-knowledge-apache-webhook-connect-rest-api-providers-http-pypi
 
 from airflow import DAG
+from airflow.decorators import task
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from notifiers import slack, pagerduty, customemail, discord
 from actions import k8s_actions
@@ -13,6 +14,12 @@ logger = logging.getLogger(__name__)
 default_args = {
     'start_date': datetime(2021, 1, 1)
 }
+
+@task
+def get_alerts(**kwargs):
+    data = kwargs['dag_run'].conf
+    
+
 
 with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None) as dag:
 
