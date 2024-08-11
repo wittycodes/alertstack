@@ -13,16 +13,17 @@ apps_v1 = client.AppsV1Api()
 
 
 # List pods
-@xcom_push(key='pods')
 @task
-def list_pods(namespace):
-    pods = v1.list_namespaced_pod(namespace=namespace)
+def list_pods(ti):
+    ns = ti.xcom_pull(key="namespace", task_ids='get_alerts')
+    pods = v1.list_namespaced_pod(namespace=ns)
     for i in pods.items:
         print(i.metadata.name)
         logger.info(i.metadata.name)
         logger.info("This is an info message")
         logger.warning("This is a warning message")
         logger.error("This is an error message")
+        ti.xcom_push(key='pods', value=pods)
     return pods
 
 

@@ -17,8 +17,8 @@ default_args = {
 
 
 @task
-def get_alerts(**kwargs):
-    data = kwargs['ti'].xcom_push(task_ids='get_alerts', )
+def get_alerts(ti):
+    data = ti.xcom_push(key="namespace", value="prometheus")
     logger.info("it's good inside webhook_prometheus_entrypoint")
     logger.info(data)
 
@@ -45,7 +45,7 @@ def webhook_prometheus_entrypoint():
         wait_for_completion=False,
     )
 
-    get_alerts() >> k8s_feedbacks.list_pods("prometheus")
+    get_alerts() >> k8s_feedbacks.list_pods()
 
     # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
