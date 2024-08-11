@@ -28,7 +28,6 @@ def webhook_prometheus_entrypoint():
     pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
         task_id='pod_volume_analysis_trigger_dag',
         trigger_dag_id='pod_volume_analysis',
-        # conf={'my_param': 'value'},
         wait_for_completion=False,
     )
 
@@ -46,7 +45,8 @@ def webhook_prometheus_entrypoint():
         wait_for_completion=False,
     )
 
-    get_alerts()
+    get_alerts() >> k8s_feedbacks.list_pods("prometheus")
+
     # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
 
