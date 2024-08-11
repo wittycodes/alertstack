@@ -1,5 +1,5 @@
 import logging
-
+import pickle
 from airflow.decorators import task
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def list_pods(ti):
         logger.info("This is an info message")
         logger.warning("This is a warning message")
         logger.error("This is an error message")
-    ti.xcom_push(key='pods', value=pods)
+    ti.xcom_push(key='pods', value=pickle.dumps(pods))
     return pods
 
 

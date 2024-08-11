@@ -1,5 +1,4 @@
 # https://www.restack.io/docs/airflow-knowledge-apache-webhook-connect-rest-api-providers-http-pypi
-import pickle
 from airflow.decorators import task, dag
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from notifiers import slack, pagerduty, customemail, discord
@@ -19,7 +18,7 @@ default_args = {
 @task
 def get_alerts(ti):
     data = ti.xcom_push(key="namespace", value="prometheus")
-    ti.xcom_push(key="alerts", value=pickle.dumps(ti.dag_run.conf))
+    ti.xcom_push(key="alerts", value=ti.dag_run.conf)
     logger.info("it's good inside webhook_prometheus_entrypoint")
     logger.info(data)
 
