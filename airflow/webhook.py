@@ -7,6 +7,8 @@ from flask import Flask, request, jsonify, Blueprint
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+import logging
+logger = logging.getLogger(__name__)
 
 webhooks_api_blueprint = Blueprint(
     'webhooks_api_blueprint',
@@ -15,7 +17,7 @@ webhooks_api_blueprint = Blueprint(
 )
 
 
-def trigger_dag(dag_id):
+def trigger_dag(dag_id, conf):
     # Trigger the specified DAG
     # Replace this with your logic to trigger the DAG
     # For example, using the Airflow API or creating a DAG run manually
@@ -24,7 +26,7 @@ def trigger_dag(dag_id):
     dag_run = dag.create_dagrun(
         run_id=f"webhook_triggered_{datetime.now()}",
         state=State.RUNNING,
-        # conf=conf,
+        conf=conf,
         external_trigger=True
     )
     return dag_run
@@ -39,8 +41,9 @@ def prometheus_webhook():
 
     # Replace with your logic to validate alert and determine target DAG
     # ...
-
-    trigger_dag("webhook_prometheus_entrypoint")
+    logger.info(data)
+    logger.info("before webhook_prometheus_entrypoint")
+    trigger_dag("webhook_prometheus_entrypoint", conf=data)
     return jsonify({'status': 'success'})
 
 
