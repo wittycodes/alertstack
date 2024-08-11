@@ -1,7 +1,6 @@
 import logging
 
 from airflow.decorators import task
-from utils.decorators import xcom_push
 logger = logging.getLogger(__name__)
 
 from kubernetes import client, config
@@ -23,7 +22,7 @@ def list_pods(ti):
         logger.info("This is an info message")
         logger.warning("This is a warning message")
         logger.error("This is an error message")
-        ti.xcom_push(key='pods', value=pods)
+    ti.xcom_push(key='pods', value=pods)
     return pods
 
 

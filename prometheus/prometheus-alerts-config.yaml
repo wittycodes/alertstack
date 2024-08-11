@@ -17,5 +17,8 @@ spec:
     receiver: 'airflow_webhook'
     groupBy: [ 'alertname' ]
     groupWait: 5s
-    groupInterval: 30s
-#    repeatInterval: 10m
+#    groupInterval: 30s
+    repeatInterval: 2m
+
+
+
