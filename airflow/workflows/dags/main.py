@@ -106,3 +106,10 @@ def node_cpu_analysis():
     ]
 
     list_pods_1 >> list_pods_2 >> final_call
+
+
+
+pod_memory_analysis()
+pod_volume_analysis()
+node_cpu_analysis()
+webhook_prometheus_entrypoint()
