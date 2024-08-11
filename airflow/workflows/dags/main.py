@@ -23,7 +23,7 @@ def get_alerts(**kwargs):
     logger.info(data)
 
 
-@dag(default_args=default_args, schedule_interval=None)
+@dag(dag_id='webhook_prometheus_entrypoint')
 def webhook_prometheus_entrypoint():
     pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
         task_id='pod_volume_analysis_trigger_dag',
@@ -50,7 +50,7 @@ def webhook_prometheus_entrypoint():
     # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
 
-@dag(default_args=default_args, schedule_interval=None)
+@dag(dag_id='pod_volume_analysis')
 def pod_volume_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
@@ -70,7 +70,7 @@ def pod_volume_analysis():
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
 
-@dag(default_args=default_args, schedule_interval=None)
+@dag(dag_id='pod_memory_analysis')
 def pod_memory_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
@@ -90,7 +90,7 @@ def pod_memory_analysis():
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
 
-@dag(default_args=default_args, schedule_interval=None)
+@dag(dag_id='node_cpu_analysis')
 def node_cpu_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
