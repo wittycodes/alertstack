@@ -1,7 +1,6 @@
 # https://www.restack.io/docs/airflow-knowledge-apache-webhook-connect-rest-api-providers-http-pypi
 
-from airflow import DAG
-from airflow.decorators import task
+from airflow.decorators import task, dag
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from notifiers import slack, pagerduty, customemail, discord
 from actions import k8s_actions
@@ -19,12 +18,13 @@ default_args = {
 
 @task
 def get_alerts(**kwargs):
-    data = kwargs['dag_run'].conf
+    data = kwargs['ti'].xcom_push(task_ids='get_alerts', )
     logger.info("it's good inside webhook_prometheus_entrypoint")
     logger.info(data)
 
 
-with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None) as dag:
+@dag(default_args=default_args, schedule_interval=None)
+def webhook_prometheus_entrypoint():
     pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
         task_id='pod_volume_analysis_trigger_dag',
         trigger_dag_id='pod_volume_analysis',
@@ -49,7 +49,9 @@ with DAG('webhook_prometheus_entrypoint', default_args=default_args, schedule_in
     get_alerts()
     # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
 
-with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=None) as dag:
+
+@dag(default_args=default_args, schedule_interval=None)
+def pod_volume_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
@@ -67,7 +69,9 @@ with DAG('pod_volume_analysis', default_args=default_args, schedule_interval=Non
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
-with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=None) as dag:
+
+@dag(default_args=default_args, schedule_interval=None)
+def pod_memory_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
@@ -85,7 +89,9 @@ with DAG('pod_memory_analysis', default_args=default_args, schedule_interval=Non
 
     list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
 
-with DAG('node_cpu_analysis', default_args=default_args, schedule_interval=None) as dag:
+
+@dag(default_args=default_args, schedule_interval=None)
+def node_cpu_analysis():
     list_pods_1 = k8s_feedbacks.list_pods("monitoring")
 
     list_pods_2 = k8s_feedbacks.list_pods("prometheus")
