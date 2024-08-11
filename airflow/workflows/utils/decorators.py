@@ -1,10 +1,10 @@
 def xcom_push(key, value):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
+            value = func(*args, **kwargs)
             ti = kwargs['ti']
             ti.xcom_push(key=key, value=value)
-            return result
+            return value
         return wrapper
     return decorator
 
