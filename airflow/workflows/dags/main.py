@@ -26,25 +26,25 @@ def get_alerts(ti):
 
 @dag(dag_id='webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None)
 def webhook_prometheus_entrypoint():
-    pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
-        task_id='pod_volume_analysis_trigger_dag',
-        trigger_dag_id='pod_volume_analysis',
-        wait_for_completion=False,
-    )
-
-    pod_memory_analysis_trigger_dag = TriggerDagRunOperator(
-        task_id='pod_memory_analysis_trigger_dag',
-        trigger_dag_id='pod_memory_analysis',
-        # conf={'my_param': 'value'},
-        wait_for_completion=False,
-    )
-
-    node_cpu_analysis_trigger_dag = TriggerDagRunOperator(
-        task_id='node_cpu_analysis_trigger_dag',
-        trigger_dag_id='node_cpu_analysis',
-        # conf={'my_param': 'value'},
-        wait_for_completion=False,
-    )
+    # pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
+    #     task_id='pod_volume_analysis_trigger_dag',
+    #     trigger_dag_id='pod_volume_analysis',
+    #     wait_for_completion=False,
+    # )
+    #
+    # pod_memory_analysis_trigger_dag = TriggerDagRunOperator(
+    #     task_id='pod_memory_analysis_trigger_dag',
+    #     trigger_dag_id='pod_memory_analysis',
+    #     # conf={'my_param': 'value'},
+    #     wait_for_completion=False,
+    # )
+    #
+    # node_cpu_analysis_trigger_dag = TriggerDagRunOperator(
+    #     task_id='node_cpu_analysis_trigger_dag',
+    #     trigger_dag_id='node_cpu_analysis',
+    #     # conf={'my_param': 'value'},
+    #     wait_for_completion=False,
+    # )
 
     get_alerts() >> k8s_feedbacks.list_pods()
 
