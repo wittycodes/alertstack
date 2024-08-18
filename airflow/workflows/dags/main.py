@@ -34,7 +34,7 @@ def choose_scenarios(ti):
 
 @dag(dag_id='webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None)
 def webhook_prometheus_entrypoint():
-    get_alerts() >> choose_scenarios()
+    get_alerts() >> choose_scenarios() >> [ enrichment.k8s.pod.list_pods(), enrichment.k8s.pod.get_pod_volume(), enrichment.aws.vm.get_cpu()]
 
 
 webhook_prometheus_entrypoint()
