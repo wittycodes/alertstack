@@ -16,7 +16,7 @@ default_args = {
 
 @task
 def get_alerts(ti):
-    data = ti.xcom_push(key="namespace", valuelue="prometheus")
+    data = ti.xcom_push(key="namespace", value="prometheus")
     ti.xcom_push(key="alerts", value=ti.dag_run.conf)
     logger.info("it's good inside webhook_prometheus_entrypoint")
     logger.info(data)
