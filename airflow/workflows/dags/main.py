@@ -1,10 +1,9 @@
 # https://www.restack.io/docs/airflow-knowledge-apache-webhook-connect-rest-api-providers-http-pypi
-from airflow.decorators import task, dag
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
-from notifiers import slack, pagerduty, customemail, discord
-from actions import k8s_actions
-from feedbacks import k8s_feedbacks
-
+from airflow.decorators import task, dag, branch_task
+import enrichment.k8s.pod
+import enrichment.aws.vm
+import remediation.k8s.pod
+import dags.k8s.pod_scenarios
 from datetime import datetime
 import logging
 
@@ -23,93 +22,19 @@ def get_alerts(ti):
     logger.info(data)
 
 
+@branch_task
+def choose_scenarios(ti):
+    data = ti.xcom_pull(key="alerts")
+    ti.xcom_push(key="scenarios", value=data)
+    x = 1
+    if(x==1):
+        return [enrichment.k8s.pod.list_pods(), enrichment.k8s.pod.get_pod_volume()]
+    else:
+        return [enrichment.aws.vm.get_cpu()]
+
 @dag(dag_id='webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None)
 def webhook_prometheus_entrypoint():
-    # pod_volume_analysis_trigger_dag = TriggerDagRunOperator(
-    #     task_id='pod_volume_analysis_trigger_dag',
-    #     trigger_dag_id='pod_volume_analysis',
-    #     wait_for_completion=False,
-    # )
-    #
-    # pod_memory_analysis_trigger_dag = TriggerDagRunOperator(
-    #     task_id='pod_memory_analysis_trigger_dag',
-    #     trigger_dag_id='pod_memory_analysis',
-    #     # conf={'my_param': 'value'},
-    #     wait_for_completion=False,
-    # )
-    #
-    # node_cpu_analysis_trigger_dag = TriggerDagRunOperator(
-    #     task_id='node_cpu_analysis_trigger_dag',
-    #     trigger_dag_id='node_cpu_analysis',
-    #     # conf={'my_param': 'value'},
-    #     wait_for_completion=False,
-    # )
-
-    get_alerts() >> k8s_feedbacks.list_pods()
-
-    # pod_volume_analysis_trigger_dag >> [ node_cpu_analysis_trigger_dag, pod_memory_analysis_trigger_dag]
+    get_alerts() >> choose_scenarios()
 
 
-@dag(dag_id='pod_volume_analysis', default_args=default_args, schedule_interval=None)
-def pod_volume_analysis():
-    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
-
-    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
-
-    query_pod_volume = k8s_feedbacks.get_pod_volume("prometheus")
-
-    action = k8s_actions.increase_pod_volume("monitoring")
-
-    final_call = [
-        slack.send_to_slack("hello"),
-        pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello"),
-        action
-    ]
-
-    list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
-
-
-@dag(dag_id='pod_memory_analysis', default_args=default_args, schedule_interval=None)
-def pod_memory_analysis():
-    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
-
-    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
-
-    query_pod_volume = k8s_feedbacks.get_pod_volume("prometheus")
-
-    action = k8s_actions.increase_pod_volume("monitoring")
-
-    final_call = [
-        slack.send_to_slack("hello"),
-        pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello"),
-        action
-    ]
-
-    list_pods_1 >> list_pods_2 >> query_pod_volume >> final_call
-
-
-@dag(dag_id='node_cpu_analysis', default_args=default_args, schedule_interval=None)
-def node_cpu_analysis():
-    list_pods_1 = k8s_feedbacks.list_pods("monitoring")
-
-    list_pods_2 = k8s_feedbacks.list_pods("prometheus")
-
-    action = k8s_actions.increase_pod_volume("monitoring")
-
-    final_call = [
-        slack.send_to_slack("hello"),
-        pagerduty.send_to_pagerduty("hello"),
-        customemail.send_to_custom_email("hello"),
-        action
-    ]
-
-    list_pods_1 >> list_pods_2 >> final_call
-
-
-
-pod_memory_analysis()
-pod_volume_analysis()
-node_cpu_analysis()
 webhook_prometheus_entrypoint()

@@ -14,7 +14,7 @@ apps_v1 = client.AppsV1Api()
 # List pods
 @task
 def list_pods(ti):
-    ns = ti.xcom_pull(key="namespace", task_ids='get_alerts')
+    ns = ti.xcom_pull(key="namespace")
     pods = v1.list_namespaced_pod(namespace=ns)
     for i in pods.items:
         print(i.metadata.name)
@@ -27,5 +27,5 @@ def list_pods(ti):
 
 
 @task
-def get_pod_volume(namespace):
+def get_pod_volume(ti):
     return None
