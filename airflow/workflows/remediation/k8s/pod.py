@@ -11,8 +11,9 @@ from airflow.decorators import task
 
 
 @task
-def increase_pod_volume(namespace):
-    pods = v1.list_namespaced_pod(namespace=namespace)
+def increase_pod_volume(ti):
+    ns = ti.xcom_pull(key="namespace")
+    pods = v1.list_namespaced_pod(namespace=ns)
     for i in pods.items:
         print(i.metadata.name)
         logger.info(i.metadata.name)

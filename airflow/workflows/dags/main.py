@@ -34,9 +34,7 @@ def choose_scenarios(ti):
 
 @dag(dag_id='webhook_prometheus_entrypoint', default_args=default_args, schedule_interval=None)
 def webhook_prometheus_entrypoint():
-    get_alerts()
-
-    # >> choose_scenarios()
+    get_alerts() >> choose_scenarios()
 
 
 webhook_prometheus_entrypoint()
